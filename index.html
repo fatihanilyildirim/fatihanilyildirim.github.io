@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fatih Yıldırım</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --panel:#121723;
+    --muted:#9aa4b2;
+    --text:#e7ecf3;
+    --brand:#5aa9ff;
+    --card:#151b28;
+    --stroke:#20283a;
+    --radius:10px;
+    --fs-1:13px;
+    --fs-2:12px;
+    --fs-3:11px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    background: var(--bg);
+    color: var(--text);
+    display:flex; justify-content:center; align-items:center;
+    overflow:hidden;
+    cursor:none;
+  }
+
+  /* SIFIRDAN ARKA PLAN: Python kod yağmuru */
+  .bg-code{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    color:#cde3ff;
+    opacity:.18;
+    display:grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap:24px;
+    padding:40px 56px;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  }
+  .code-col{position:relative; overflow:hidden; white-space:pre}
+  .code-col .scroll{
+    position:absolute; left:0; top:0; width:100%;
+    animation: scrollY var(--dur,20s) linear infinite;
+    will-change: transform;
+  }
+  @keyframes scrollY{
+    0%{transform: translateY(0)}
+    100%{transform: translateY(-50%)}
+  }
+  .token-kw{color:#7dd3fc}
+  .token-fn{color:#a7f3d0}
+  .token-str{color:#fca5a5}
+  .token-num{color:#fde68a}
+  .token-cm{color:#9aa4b2}
+
+  @media (max-width: 860px){
+    .bg-code{grid-template-columns: repeat(3, 1fr); padding:28px}
+  }
+  @media (max-width: 560px){
+    .bg-code{grid-template-columns: repeat(2, 1fr); padding:20px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .code-col .scroll{animation:none}
+  }
+
+  .wrap{
+    position:relative; z-index:1;
+    display:flex; width:min(980px,94vw); height:min(560px,86vh);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid var(--stroke);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+    overflow:hidden;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar{
+    width:120px; background: var(--panel);
+    border-right:1px solid var(--stroke);
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:18px 10px;
+  }
+  .brand{
+    font-size: var(--fs-1); font-weight:700; letter-spacing:.2px; color:#fff; opacity:.95;
+    margin-bottom:10px; text-align:center;
+  }
+  nav a{
+    display:block; width:100%;
+    text-decoration:none; text-align:center;
+    color: var(--muted);
+    padding:8px 6px;
+    border-radius:8px; font-size: var(--fs-2); font-weight:700;
+    transition:all .15s ease;
+  }
+  nav a[aria-current="page"], nav a:hover{
+    color:#fff; background: rgba(90,169,255,0.12); outline:1px solid rgba(90,169,255,0.25);
+  }
+
+  .content{
+    flex:1; padding:18px; overflow:auto;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+  }
+  h2{margin:0 0 6px 0; font-size:14px}
+  .sub{margin:0 0 16px 0; color:var(--muted); font-size: var(--fs-2)}
+
+  section{display:none; animation: fade .18s ease}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:translateY(0)}}
+
+  .projects{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:10px;
+  }
+  .card{
+    background: var(--card);
+    border:1px solid var(--stroke);
+    border-radius:8px;
+    padding:8px;
+    text-align:center;
+  }
+  .thumb{
+    width:100%; aspect-ratio: 1/1;
+    border-radius:6px; object-fit:cover; display:block;
+    background:#0f1420;
+  }
+  .title{
+    margin:6px 0 2px 0; font-size: var(--fs-2); font-weight:700; color:#fff;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .desc{
+    margin:0 0 6px 0; font-size: var(--fs-3); color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .btn{
+    display:inline-block; padding:4px 8px; font-size:10.5px; font-weight:700;
+    color:#05121f; background: var(--brand);
+    border-radius:999px; text-decoration:none;
+  }
+  .btn:hover{filter:brightness(1.06)}
+
+  .content::-webkit-scrollbar{height:8px; width:8px}
+  .content::-webkit-scrollbar-thumb{background:#2a3349; border-radius:10px}
+  .content::-webkit-scrollbar-track{background:transparent}
+
+  .cursor, .cursor-outline{
+    position:fixed; top:0; left:0; pointer-events:none; z-index:3;
+    transform:translate(-50%,-50%); mix-blend-mode: difference;
+  }
+  .cursor{width:6px; height:6px; border-radius:50%; background:#fff}
+  .cursor-outline{
+    width:18px; height:18px; border:1.2px solid #fff; border-radius:50%;
+    opacity:.6;
+  }
+
+  @media (max-width: 860px){
+    .wrap{height: 82vh}
+    .projects{grid-template-columns: repeat(3, 1fr)}
+  }
+  @media (max-width: 560px){
+    .sidebar{width:96px}
+    .projects{grid-template-columns: repeat(2, 1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-code" aria-hidden="true"></div>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">FY</div>
+    <nav>
+      <a href="#" data-target="hakkimda" aria-current="page">Hakkımda</a>
+      <a href="#" data-target="projelerim">Projelerim</a>
+      <a href="#" data-target="iletisim">İletişim</a>
+    </nav>
+  </aside>
+
+  <main class="content" aria-live="polite">
+    <header>
+      <h2>Fatih Yıldırım</h2>
+      <p class="sub">Yazılım</p>
+    </header>
+
+    <section id="hakkimda" class="active" role="region" aria-label="Hakkımda">
+      <p style="font-size:13px; line-height:1.6; margin:0">
+Merhaba, ben Fatih Yıldırım. Yazılım geliştirmeye olan ilgim küçük yaşlarda başladı ve zamanla bu merakım tutkuya, ardından da mesleğime dönüştü. Özellikle Python diliyle çalışmayı seviyorum; esnek yapısı, güçlü kütüphaneleri ve fikirlerimi hızlıca hayata dönüştürme imkânı bana her zaman ilham veriyor.
+
+Projelerimde sıklıkla otomasyon, veri işleme, web geliştirme ve günlük hayatı kolaylaştıracak küçük ama işlevsel araçlar üzerinde çalışıyorum. Bunun yanı sıra PHP ile dinamik web uygulamaları geliştiriyor, MyBB forum altyapısında özelleştirmeler yapıyor ve WordPress üzerinde pratik çözümler üretiyorum. Ayrıca VB.NET bilgim sayesinde masaüstü uygulamaları da hayata geçirebiliyorum.
+
+Yazılım dışında ise yaratıcılığımı SFX Artist ve müzisyen olarak oyun projelerine katkı sağlayarak gösteriyorum. Ses tasarımı ve müzik prodüksiyonu konusundaki deneyimim sayesinde, katıldığım oyun projelerine yalnızca yazılımsal değil, aynı zamanda sanatsal bir boyut da kazandırıyorum. Bu yönüm, üretim sürecine farklı bir bakış açısı katıyor ve projeleri daha bütünsel bir hale getiriyor.
+
+Amacım, farklı teknolojiler ve disiplinler arasında köprü kurarak hem kullanıcı dostu hem de yaratıcı projeler geliştirmek. Kendimi sürekli geliştirmeyi, yeni teknolojileri ve sanat dallarını keşfetmeyi önemsiyorum. Yazılım dünyasının hızla değişen yapısı bana her gün yeni şeyler öğrenme fırsatı verirken, müzik ve ses tasarımıyla da yaratıcılığımı beslemeye devam ediyorum.
+
+Boş zamanlarımda yeni projeler denemek, açık kaynak topluluklarını takip etmek ve müzik üretmek bana büyük keyif veriyor. Böylece hem teknik hem de sanatsal anlamda gelişerek ürettiklerime daha fazla değer katıyorum.
+      </p>
+    </section>
+
+    <section id="projelerim" role="region" aria-label="Projelerim">
+      <div class="projects">
+        <article class="card">
+          <img class="thumb" src="https://cdn.r10.net/editor/195289/1274834017.png" alt="Program 1 görseli" />
+          <div class="title">FM FrontEnd</div>
+          <div class="desc">Radyo FrontEnd Tasarımı</div>
+          <a class="btn" href="https://github.com/fatihanilyildirim/fatihfm" target="_blank" rel="noopener">İncele</a>
+        </article>
+        <article class="card">
+          <img class="thumb" src="https://cdn.r10.net/editor/195289/3396208509.png" alt="Program 2 görseli" />
+          <div class="title">WhatsApp Bulk</div>
+          <div class="desc">Toplu Mesaj Gönderici</div>
+          <a class="btn" href="https://www.r10.net/bot-program-satisi/4557871-whatsapp-toplu-mesaj-gonderme-botu.html" target="_blank" rel="noopener">İncele</a>
+        </article>
+        <article class="card">
+          <img class="thumb" src="https://cdn.r10.net/editor/195289/2166330508.png" alt="Program 3 görseli" />
+          <div class="title">TikTok/Reels/Shorts</div>
+          <div class="desc">Mass & Bulk İndirici</div>
+          <a class="btn" href="https://www.r10.net/bot-program-satisi/4545308-toplu-video-indirici-mass-128640-bulk-reels-tiktok-shorts.html" target="_blank" rel="noopener">İncele</a>
+        </article>
+        <article class="card">
+          <img class="thumb" src="https://cdn.r10.net/editor/195289/1193331737.png" alt="Program 4 görseli" />
+          <div class="title">Domain Hunter</div>
+          <div class="desc">Domain Bulma Aracı</div>
+          <a class="btn" href="https://github.com/fatihanilyildirim/domainhunter" target="_blank" rel="noopener">İncele</a>
+        </article>
+        <article class="card">
+          <img class="thumb" src="https://i.hizliresim.com/3yddx33.png" alt="Program 5 görseli" />
+          <div class="title">Username Checker</div>
+          <div class="desc">Instagram UN Checker</div>
+          <a class="btn" href="https://www.r10.net/bot-program-satisi/4554694-instagram-kullanici-adi-kontrol-botu.html" target="_blank" rel="noopener">İncele</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="iletisim" role="region" aria-label="İletişim">
+      <p style="font-size:13px; margin:0 0 10px 0;">Bana e-posta ile ulaş:</p>
+      <p style="margin:0">
+        <a class="btn" href="mailto:fatihanilyildirim@gmail.com">fatihanilyildirim@gmail.com</a>
+      </p>
+    </section>
+  </main>
+</div>
+
+<script>
+  // Menü geçişi
+  const links = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('main section');
+  links.forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const id = a.dataset.target;
+      sections.forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      links.forEach(x=>x.removeAttribute('aria-current'));
+      a.setAttribute('aria-current','page');
+    });
+  });
+
+  // Özel imleç
+  const dot = document.createElement('div');
+  dot.className = 'cursor';
+  const ring = document.createElement('div');
+  ring.className = 'cursor-outline';
+  document.body.appendChild(dot);
+  document.body.appendChild(ring);
+
+  let mx=0,my=0, rx=0, ry=0;
+  window.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.transform=`translate(${mx-3}px,${my-3}px)`;
+  });
+  function tick(){
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) * 0.15;
+    ring.style.transform = `translate(${rx-9}px,${ry-9}px)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  document.addEventListener('mouseover', e=>{
+    if(e.target.closest('a,.btn')){
+      ring.style.transition='transform .08s ease, width .08s ease, height .08s ease';
+      ring.style.width='12px'; ring.style.height='12px';
+    }
+  });
+  document.addEventListener('mouseout', e=>{
+    if(e.target.closest('a,.btn')){
+      ring.style.width='18px'; ring.style.height='18px';
+    }
+  });
+
+  const PY_SNIPPETS = [
+`def fatihanily_topla(a, b):
+    return a + b
+
+class Hesap:
+    def __init__(self, ad):
+        self.ad = ad
+    def calistir(self, *args):
+        sonuc = sum(args)
+        return {"ad": self.ad, "sonuc": sonuc}`,
+`from dataclasses import dataclass
+@dataclass
+class Kullanici:
+    id: int
+    ad: str
+    aktif: bool = True
+
+def filtrele(liste):
+    return [x for x in liste if x.aktif]`,
+`import asyncio, time
+async def islem(n):
+    await asyncio.sleep(0.1)
+    return n*n
+
+async def ana():
+    sonuc = await asyncio.gather(*[islem(i) for i in range(10)])
+    print(sonuc)`,
+`def memoize(fn):
+    cache={}
+    def _wrap(*a):
+        if a in cache: return cache[a]
+        cache[a]=fn(*a); return cache[a]
+    return _wrap
+
+@memoize
+def fib(n): return n if n<2 else fib(n-1)+fib(n-2)`,
+`import json, pathlib
+def oku_yaz(p):
+    p=pathlib.Path(p)
+    data=json.loads(p.read_text())
+    p.with_suffix(".out.json").write_text(json.dumps(data, indent=2))`,
+`from typing import Iterable
+def chunked(xs: Iterable, n: int):
+    buf=[]
+    for x in xs:
+        buf.append(x)
+        if len(buf)==n:
+            yield buf; buf=[]
+    if buf: yield buf`
+  ];
+
+  function highlight(s){
+    return s
+      .replace(/#.*$/gm, m=>`<span class="token-cm">${m}</span>`)
+      .replace(/\b(def|class|return|import|from|async|await|for|if|else|yield|in|as|with|True|False|None)\b/g, m=>`<span class="token-kw">${m}</span>`)
+      .replace(/\b([A-Za-z_][A-Za-z0-9_]*)\s*(?=\()/g, m=>`<span class="token-fn">${m}</span>`)
+      .replace(/(".*?"|'.*?')/g, m=>`<span class="token-str">${m}</span>`)
+      .replace(/\b\d+\b/g, m=>`<span class="token-num">${m}</span>`);
+  }
+
+  const bgHost = document.querySelector('.bg-code');
+  const COLS = getComputedStyle(bgHost).gridTemplateColumns.split(' ').length || 6;
+
+  for(let i=0;i<COLS;i++){
+    const col = document.createElement('div');
+    col.className = 'code-col';
+    const scroller = document.createElement('div');
+    scroller.className = 'scroll';
+
+    const pick = () => PY_SNIPPETS[Math.floor(Math.random()*PY_SNIPPETS.length)];
+    const block = [pick(), pick(), Math.random()>.6?pick():""].join("\n\n");
+    const html = highlight(block.trim());
+
+    scroller.innerHTML = `<div>${html}</div><br/><div>${html}</div>`;
+    scroller.style.setProperty('--dur', (18 + Math.random()*10) + 's');
+    scroller.style.transform = `translateY(-${Math.floor(Math.random()*50)}%)`;
+
+    col.appendChild(scroller);
+    bgHost.appendChild(col);
+  }
+</script>
+</body>
+</html>
